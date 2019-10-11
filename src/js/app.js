@@ -4,8 +4,6 @@ require('./vendor/symfony');
 
 import Ignition from './Ignition';
 
-/* window.ignite = data => {
-    return new Ignition(data);
-}; */
+window.tabs = window.tabs || [];
 
 export default Ignition;

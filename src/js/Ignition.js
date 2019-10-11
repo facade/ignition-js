@@ -28,10 +28,33 @@ export default class Ignition {
         this.tabCallbacks.push(callback);
     }
 
+    createContainer() {
+        const modalStyles = [
+            'position: fixed;',
+            'z-index: 1000;',
+            'left: 0;',
+            'top: 0;',
+            'width: 100%;',
+            'height: 100%;',
+            'overflow: auto;',
+            'background-color: rgba(0,0,0,0.5);',
+        ];
+        const modal = document.createElement('div');
+        modal.style = modalStyles.join(' ');
+
+        const errorPage = document.createElement('div');
+        errorPage.id = 'ignition-error-page';
+
+        modal.appendChild(errorPage);
+        document.body.appendChild(modal);
+    }
+
     start() {
         this.registerBuiltinTabs();
 
         this.registerCustomTabs();
+
+        this.createContainer();
 
         window.app = new Vue({
             data: () => this.data,
@@ -58,6 +81,6 @@ export default class Ignition {
                     },
                 });
             },
-        }).$mount('#app');
+        }).$mount('#ignition-error-page');
     }
 }

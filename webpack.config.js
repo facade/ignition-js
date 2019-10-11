@@ -1,14 +1,12 @@
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
-    entry: {
-        ignition: './src/js/app.js',
-    },
+    entry: { index: './src/js/app.js' },
 
     output: {
         path: `${__dirname}/compiled`,
-        publicPath: '/',
         filename: '[name].js',
+        libraryTarget: 'umd',
     },
 
     module: {
