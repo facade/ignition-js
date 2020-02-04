@@ -7,6 +7,9 @@
         "build": "NODE_ENV=production webpack --mode production",
         "format": "prettier --write 'src/**/*.{js,ts}'"
     },
+    "dependencies": {
+        "@flareapp/flare-client": "^1.0.0"
+    },
     "devDependencies": {
         "@babel/core": "^7.4.5",
         "@babel/plugin-syntax-dynamic-import": "^7.2.0",
@@ -42,8 +45,5 @@
             "/node_modules/",
             "/__helpers__/"
         ]
-    },
-    "dependencies": {
-        "@flareapp/flare-client": "^1.0.0"
     }
 }

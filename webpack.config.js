@@ -1,5 +1,5 @@
 module.exports = {
-    entry: { index: './src/app.ts' },
+    entry: { index: './src/app.js' },
 
     output: {
         path: `${__dirname}/dist`,
