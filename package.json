@@ -23,7 +23,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged && yarn build && git add dist/index.js"
+            "pre-commit": "lint-staged && yarn build"
         }
     },
     "lint-staged": {
