@@ -1,10 +1,8 @@
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
-
 module.exports = {
-    entry: { index: './src/js/app.js' },
+    entry: { index: './src/app.ts' },
 
     output: {
-        path: `${__dirname}/compiled`,
+        path: `${__dirname}/dist`,
         filename: '[name].js',
         libraryTarget: 'umd',
     },
@@ -12,29 +10,15 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(js|tsx?)$/,
+                test: /\.(js|ts?)$/,
                 use: 'babel-loader',
                 exclude: /node_modules/,
-            },
-            {
-                test: /\.vue$/,
-                loader: 'vue-loader',
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    { loader: 'css-loader', options: { url: false } },
-                    'postcss-loader',
-                ],
             },
         ],
     },
 
-    plugins: [new VueLoaderPlugin()],
-
     resolve: {
-        extensions: ['.css', '.js', '.ts', '.vue'],
+        extensions: ['.js', '.ts'],
         alias: {
             vue$: 'vue/dist/vue.esm.js',
         },
