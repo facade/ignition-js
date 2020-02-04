@@ -1,5 +1,5 @@
 {
-    "name": "ignition-js",
+    "name": "@flareapp/ignition-js",
     "main": "dist/index.js",
     "private": true,
     "scripts": {
@@ -42,5 +42,8 @@
             "/node_modules/",
             "/__helpers__/"
         ]
+    },
+    "dependencies": {
+        "@flareapp/flare-client": "^1.0.0"
     }
 }
