@@ -29,6 +29,40 @@ export const ignitionErrorContainerHTML = `
             height: 90%;
             width: 90%;
             background-color: #FFFFFF;
+            border: 1px solid black;
         "
-    ></div>
+    >
+        <iframe width="100%" height="100%"></iframe>
+    </div>
+`;
+
+export const iframeHTMl = `
+    <body>
+        <div id="app">foo</div>
+
+        <script>**ignition-ui**</script>
+
+        <script>
+            // TODO: import '@flareapp/ignition-ui' somehow
+            window.tabs = [];
+
+            /* window.ignite({
+                report: **report**,
+                config: {
+                    directorySeparator: '/',
+                    editor: 'vscode',
+                    enableRunnableSolutions: false,
+                    enableShareButton: false,
+                    localSitesPath: '',
+                    remoteSitesPath: '',
+                    theme: 'light',
+                },
+                solutions: [],
+                telescopeUrl: '',
+                shareEndpoint: '',
+                defaultTab: 'StackTab',
+                defaultTabProps: {},
+            }).start(); */
+        </script>
+    </body>
 `;

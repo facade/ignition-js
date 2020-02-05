@@ -1,5 +1,4 @@
-import '@flareapp/ignition-ui';
-import { ignitionErrorSelectorHTML, ignitionErrorContainerHTML } from './htmlStrings';
+import { ignitionErrorSelectorHTML, ignitionErrorContainerHTML, iframeHTMl } from './htmlStrings';
 
 const { flare } = window;
 const errors = [];
@@ -14,10 +13,11 @@ if (flare) {
     };
 }
 
-const errorContainer = document.createElement('div');
-errorContainer.innerHTML = ignitionErrorContainerHTML;
-errorContainer.style.display = 'none';
-document.body.appendChild(errorContainer);
+const errorModal = document.createElement('div');
+errorModal.innerHTML = ignitionErrorContainerHTML;
+errorModal.style.display = 'none';
+document.body.appendChild(errorModal);
+const iframe = document.querySelector('#__ignition__container > iframe');
 
 function showIgnitionErrorSelector() {
     let selector = document.getElementById('__ignition__selector');
@@ -50,20 +50,17 @@ function handleSelectError(e) {
     }
 
     // Show error container
-    errorContainer.style.display = 'block';
+    errorModal.style.display = 'block';
 
     // Generate a report for the error and show it in the container
     flare.createReport(errors[value]).then(report => {
         console.log(report);
 
-        /* window.ignite({
-            report: report,
-            config: {},
-            solutions: [],
-            telescopeUrl: '',
-            shareEndpoint: '',
-            defaultTab: '',
-            defaultTabProps: {},
-        }); */
+        // TODO: replace **ignition-ui** with the content of the ignition-ui library somehow
+        const iframeContent = iframeHTMl.replace('**report**', JSON.stringify(report));
+
+        iframe.contentWindow.document.open();
+        iframe.contentWindow.document.write(iframeContent);
+        iframe.contentWindow.document.close();
     });
 }
