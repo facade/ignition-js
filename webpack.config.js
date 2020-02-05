@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
     entry: { index: './src/app.js' },
 
@@ -14,6 +16,10 @@ module.exports = {
                 use: 'babel-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /ignition\.js$/,
+                use: 'raw-loader',
+            },
         ],
     },
 
@@ -21,6 +27,10 @@ module.exports = {
         extensions: ['.js', '.ts'],
         alias: {
             vue$: 'vue/dist/vue.esm.js',
+            ignitionIframeScript$: path.resolve(
+                __dirname,
+                './node_modules/@flareapp/ignition-ui/compiled/ignition.js',
+            ),
         },
     },
 

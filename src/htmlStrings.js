@@ -39,30 +39,27 @@ export const ignitionErrorContainerHTML = `
 export const iframeHTMl = `
     <body>
         <div id="app">foo</div>
-
-        <script>**ignition-ui**</script>
-
-        <script>
-            // TODO: import '@flareapp/ignition-ui' somehow
-            window.tabs = [];
-
-            /* window.ignite({
-                report: **report**,
-                config: {
-                    directorySeparator: '/',
-                    editor: 'vscode',
-                    enableRunnableSolutions: false,
-                    enableShareButton: false,
-                    localSitesPath: '',
-                    remoteSitesPath: '',
-                    theme: 'light',
-                },
-                solutions: [],
-                telescopeUrl: '',
-                shareEndpoint: '',
-                defaultTab: 'StackTab',
-                defaultTabProps: {},
-            }).start(); */
-        </script>
     </body>
+`;
+
+export const ignitionLoaderScript = `
+    window.tabs = [];
+
+    window.ignite({
+        report: **report**,
+        config: {
+            directorySeparator: '/',
+            editor: 'vscode',
+            enableRunnableSolutions: false,
+            enableShareButton: false,
+            localSitesPath: '',
+            remoteSitesPath: '',
+            theme: 'light',
+        },
+        solutions: [],
+        telescopeUrl: '',
+        shareEndpoint: '',
+        defaultTab: 'StackTab',
+        defaultTabProps: {},
+    }).start();
 `;

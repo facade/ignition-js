@@ -1,7 +1,21 @@
-import { ignitionErrorSelectorHTML, ignitionErrorContainerHTML, iframeHTMl } from './htmlStrings';
+// Importing ignition-ui as a string using raw-loader (see webpack config)
+import ignitionIframeScript from 'ignitionIframeScript';
+
+import {
+    ignitionErrorSelectorHTML,
+    ignitionErrorContainerHTML,
+    ignitionLoaderScript,
+    iframeHTMl,
+} from './htmlStrings';
 
 const { flare } = window;
 const errors = [];
+
+const errorModal = document.createElement('div');
+errorModal.innerHTML = ignitionErrorContainerHTML;
+errorModal.style.display = 'none';
+document.body.appendChild(errorModal);
+const iframe = document.querySelector('#__ignition__container > iframe');
 
 if (flare) {
     flare.beforeEvaluate = error => {
@@ -12,12 +26,6 @@ if (flare) {
         return false;
     };
 }
-
-const errorModal = document.createElement('div');
-errorModal.innerHTML = ignitionErrorContainerHTML;
-errorModal.style.display = 'none';
-document.body.appendChild(errorModal);
-const iframe = document.querySelector('#__ignition__container > iframe');
 
 function showIgnitionErrorSelector() {
     let selector = document.getElementById('__ignition__selector');
@@ -52,15 +60,32 @@ function handleSelectError(e) {
     // Show error container
     errorModal.style.display = 'block';
 
+    const iframeDocument = iframe.contentDocument;
+
+    // Clear the iframe in case we were already displaying an error.
+    iframeDocument.body.innerHTML = '';
+
     // Generate a report for the error and show it in the container
     flare.createReport(errors[value]).then(report => {
-        console.log(report);
+        const ignitionLoaderContent = ignitionLoaderScript.replace(
+            '**report**',
+            JSON.stringify(report),
+        );
 
-        // TODO: replace **ignition-ui** with the content of the ignition-ui library somehow
-        const iframeContent = iframeHTMl.replace('**report**', JSON.stringify(report));
+        const div = iframe.contentWindow.document.createElement('div');
+        div.innerHTML = iframeHTMl;
+        iframeDocument.body.appendChild(div);
 
-        iframe.contentWindow.document.open();
-        iframe.contentWindow.document.write(iframeContent);
-        iframe.contentWindow.document.close();
+        addScriptToIframe(iframe, ignitionIframeScript);
+        addScriptToIframe(iframe, ignitionLoaderContent);
     });
+}
+
+function addScriptToIframe(iframeElement, scriptString) {
+    const iframeDocument = iframeElement.contentDocument;
+
+    const script = iframeElement.contentWindow.document.createElement('script');
+    script.type = 'text/javascript';
+    script.innerHTML = scriptString;
+    iframeDocument.body.appendChild(script);
 }
