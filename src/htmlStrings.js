@@ -18,7 +18,6 @@ export const ignitionErrorSelectorHTML = `
 
 export const ignitionErrorContainerHTML = `
     <div
-        id="__ignition__container"
         style="
             position: absolute;
             top: 0;
@@ -32,6 +31,19 @@ export const ignitionErrorContainerHTML = `
             border: 1px solid black;
         "
     >
+        <div
+            id="__ignition__close"
+            style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                cursor: pointer;
+                font-size: 30px;
+            "
+        >
+            X
+        </div>
+
         <iframe width="100%" height="100%"></iframe>
     </div>
 `;

@@ -8,24 +8,21 @@ import {
     iframeHTMl,
 } from './htmlStrings';
 
+// initialize the Flare client if it wasn't already
+if (!window.flare) {
+    require('@flareapp/flare-client');
+}
+
 const { flare } = window;
 const errors = [];
 
-const errorModal = document.createElement('div');
-errorModal.innerHTML = ignitionErrorContainerHTML;
-errorModal.style.display = 'none';
-document.body.appendChild(errorModal);
-const iframe = document.querySelector('#__ignition__container > iframe');
+flare.beforeEvaluate = error => {
+    errors.push(error);
 
-if (flare) {
-    flare.beforeEvaluate = error => {
-        errors.push(error);
+    showIgnitionErrorSelector();
 
-        showIgnitionErrorSelector();
-
-        return false;
-    };
-}
+    return false;
+};
 
 function showIgnitionErrorSelector() {
     let selector = document.getElementById('__ignition__selector');
@@ -47,7 +44,26 @@ function showIgnitionErrorSelector() {
 
     const index = errors.length - 1;
 
-    selector.options.add(new Option(errors[index].message, index));
+    selector.options.add(new Option(`Error ${index + 1}: ${errors[index].message}`, index));
+}
+
+function showAndGetErrorIframe() {
+    const existingModal = document.getElementById('__ignition__modal');
+
+    if (!existingModal) {
+        const errorModal = document.createElement('div');
+        errorModal.id = '__ignition__modal';
+        errorModal.innerHTML = ignitionErrorContainerHTML;
+        document.body.appendChild(errorModal);
+
+        document
+            .getElementById('__ignition__close')
+            .addEventListener('click', () => errorModal.remove());
+    }
+
+    const iframe = document.querySelector('#__ignition__modal iframe');
+
+    return iframe;
 }
 
 function handleSelectError(e) {
@@ -57,13 +73,10 @@ function handleSelectError(e) {
         return;
     }
 
-    // Show error container
-    errorModal.style.display = 'block';
-
-    const iframeDocument = iframe.contentDocument;
+    const iframe = showAndGetErrorIframe();
 
     // Clear the iframe in case we were already displaying an error.
-    iframeDocument.body.innerHTML = '';
+    iframe.contentDocument.body.innerHTML = '';
 
     // Generate a report for the error and show it in the container
     flare.createReport(errors[value]).then(report => {
@@ -74,7 +87,7 @@ function handleSelectError(e) {
 
         const div = iframe.contentWindow.document.createElement('div');
         div.innerHTML = iframeHTMl;
-        iframeDocument.body.appendChild(div);
+        iframe.contentDocument.body.appendChild(div);
 
         addScriptToIframe(iframe, ignitionIframeScript);
         addScriptToIframe(iframe, ignitionLoaderContent);
