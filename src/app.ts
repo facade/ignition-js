@@ -7,17 +7,17 @@ import {
     ignitionLoaderScript,
     iframeHTMl,
 } from './htmlStrings';
-import { addRequiredContext } from './util';
+import { addRequiredContext, hydrateIgnitionLoader } from './util';
 
-// initialize the Flare client if it wasn't already
+// initialize the Flare client if it wasn't already initialized
 if (!window.flare) {
     require('@flareapp/flare-client');
 }
 
 const { flare } = window;
-const errors = [];
+const errors: Array<Error> = [];
 
-flare.beforeEvaluate = error => {
+flare.beforeEvaluate = (error: Error) => {
     errors.push(error);
 
     showIgnitionErrorSelector();
@@ -26,7 +26,9 @@ flare.beforeEvaluate = error => {
 };
 
 function showIgnitionErrorSelector() {
-    let selector = document.getElementById('__ignition__selector');
+    let selector: HTMLSelectElement = document.getElementById(
+        '__ignition__selector',
+    ) as HTMLSelectElement;
 
     if (!selector) {
         const div = document.createElement('div');
@@ -34,7 +36,7 @@ function showIgnitionErrorSelector() {
 
         document.body.appendChild(div);
 
-        selector = document.getElementById('__ignition__selector');
+        selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
 
         selector.addEventListener('change', handleSelectError);
     }
@@ -48,7 +50,7 @@ function showIgnitionErrorSelector() {
     selector.options.add(new Option(`Error ${index + 1}: ${errors[index].message}`, index));
 }
 
-function showAndGetErrorIframe() {
+function showAndGetErrorIframe(): HTMLIFrameElement {
     const existingModal = document.getElementById('__ignition__modal');
 
     if (!existingModal) {
@@ -58,16 +60,17 @@ function showAndGetErrorIframe() {
         document.body.appendChild(errorModal);
 
         document
-            .getElementById('__ignition__close')
+            .getElementById('__ignition__close')!
             .addEventListener('click', () => errorModal.remove());
     }
 
-    const iframe = document.querySelector('#__ignition__modal iframe');
+    const iframe = document.querySelector('#__ignition__modal iframe') as HTMLIFrameElement;
 
     return iframe;
 }
 
-function handleSelectError(e) {
+function handleSelectError(e: Event) {
+    // @ts-ignore
     const { value } = e.target;
 
     if (value === 'placeholder') {
@@ -77,29 +80,27 @@ function handleSelectError(e) {
     const iframe = showAndGetErrorIframe();
 
     // Clear the iframe in case we were already displaying an error.
-    iframe.contentDocument.body.innerHTML = '';
+    iframe.contentDocument!.body.innerHTML = '';
 
     // Generate a report for the error and show it in the container
-    flare.createReport(errors[value]).then(report => {
-        const ignitionLoaderContent = ignitionLoaderScript.replace(
-            '**report**',
-            JSON.stringify(addRequiredContext(report)),
-        );
+    flare.createReport(errors[value]).then((report: FlareReport) => {
+        const ignitionLoaderContent = hydrateIgnitionLoader(ignitionLoaderScript, {
+            report: addRequiredContext(report),
+            config: {},
+        });
 
-        const div = iframe.contentWindow.document.createElement('div');
+        const div = iframe.contentWindow!.document.createElement('div');
         div.innerHTML = iframeHTMl;
-        iframe.contentDocument.body.appendChild(div);
+        iframe.contentDocument!.body.appendChild(div);
 
         addScriptToIframe(iframe, ignitionIframeScript);
         addScriptToIframe(iframe, ignitionLoaderContent);
     });
 }
 
-function addScriptToIframe(iframeElement, scriptString) {
-    const iframeDocument = iframeElement.contentDocument;
-
-    const script = iframeElement.contentWindow.document.createElement('script');
+function addScriptToIframe(iframeElement: HTMLIFrameElement, scriptString: string) {
+    const script = iframeElement.contentWindow!.document.createElement('script');
     script.type = 'text/javascript';
     script.innerHTML = scriptString;
-    iframeDocument.body.appendChild(script);
+    iframeElement.contentDocument!.body.appendChild(script);
 }
