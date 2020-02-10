@@ -7,6 +7,7 @@ import {
     ignitionLoaderScript,
     iframeHTMl,
 } from './htmlStrings';
+import { addRequiredContext } from './util';
 
 // initialize the Flare client if it wasn't already
 if (!window.flare) {
@@ -82,7 +83,7 @@ function handleSelectError(e) {
     flare.createReport(errors[value]).then(report => {
         const ignitionLoaderContent = ignitionLoaderScript.replace(
             '**report**',
-            JSON.stringify(report),
+            JSON.stringify(addRequiredContext(report)),
         );
 
         const div = iframe.contentWindow.document.createElement('div');
