@@ -8,6 +8,7 @@ declare module 'ignitionIframeScript' {
 
 type FlareReport = {
     context: {};
+    solutions: Array<{}>;
 };
 
 interface Window {

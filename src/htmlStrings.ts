@@ -60,7 +60,7 @@ export const ignitionLoaderScript = `
     window.ignite({
         report: **report**,
         config: **config**,
-        solutions: [],
+        solutions: **solutions**,
         telescopeUrl: '',
         shareEndpoint: '',
         defaultTab: 'StackTab',

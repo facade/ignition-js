@@ -25,5 +25,6 @@ export function hydrateIgnitionLoader(
 ) {
     return ignitionLoaderScript
         .replace('**report**', JSON.stringify(addRequiredContext(report)))
-        .replace('**config**', JSON.stringify(config));
+        .replace('**config**', JSON.stringify(config))
+        .replace('**solutions**', JSON.stringify(report.solutions));
 }
