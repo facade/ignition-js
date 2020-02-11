@@ -3,7 +3,7 @@
     "main": "dist/index.js",
     "private": true,
     "scripts": {
-        "dev": "webpack --mode development --watch",
+        "watch": "webpack --mode development --watch",
         "build": "NODE_ENV=production webpack --mode production",
         "format": "prettier --write 'src/**/*.{js,ts}'"
     },
@@ -12,10 +12,12 @@
     },
     "devDependencies": {
         "@babel/core": "^7.4.5",
+        "@babel/plugin-proposal-class-properties": "^7.8.3",
         "@babel/plugin-syntax-dynamic-import": "^7.2.0",
         "@babel/plugin-transform-runtime": "^7.4.4",
         "@babel/preset-env": "^7.4.5",
         "@babel/preset-typescript": "^7.3.3",
+        "@types/node": "^13.7.0",
         "babel-loader": "^8.0.6",
         "husky": "^1.3.1",
         "lint-staged": "^8.1.5",

@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "lib": ["dom", "es2017"],
         "noEmit": true,
@@ -16,8 +15,9 @@
         "target": "esnext",
         "baseUrl": ".",
         "paths": {
-            "*": ["*", "src/js/*"]
+            "*": ["*", "src/js/*"],
+            "ignitionIframeScript": ["node_modules/@flareapp/ignition-ui/compiled/ignition"]
         }
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*", "index.d.ts"]
 }

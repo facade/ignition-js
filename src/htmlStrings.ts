@@ -59,15 +59,7 @@ export const ignitionLoaderScript = `
 
     window.ignite({
         report: **report**,
-        config: {
-            directorySeparator: '/',
-            editor: 'vscode',
-            enableRunnableSolutions: false,
-            enableShareButton: false,
-            localSitesPath: '',
-            remoteSitesPath: '',
-            theme: 'light',
-        },
+        config: **config**,
         solutions: [],
         telescopeUrl: '',
         shareEndpoint: '',

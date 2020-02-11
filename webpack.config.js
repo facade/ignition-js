@@ -24,7 +24,7 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.js', '.ts'],
+        extensions: ['.js', '.ts', '.d.ts'],
         alias: {
             vue$: 'vue/dist/vue.esm.js',
             ignitionIframeScript$: path.resolve(
