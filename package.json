@@ -18,10 +18,10 @@
         "format": "prettier --write 'src/**/*.{js,ts}'"
     },
     "dependencies": {
-        "@flareapp/flare-client": "^1.0.0",
-        "@facadecompany/ignition-ui": "^0.0.1"
+        "@flareapp/flare-client": "^1.0.0"
     },
     "devDependencies": {
+        "@facadecompany/ignition-ui": "^0.0.1",
         "@babel/core": "^7.4.5",
         "@babel/plugin-proposal-class-properties": "^7.8.3",
         "@babel/plugin-syntax-dynamic-import": "^7.2.0",
