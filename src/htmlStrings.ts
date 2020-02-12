@@ -62,7 +62,7 @@ export const ignitionLoaderScript = `
         config: **config**,
         solutions: **solutions**,
         telescopeUrl: '',
-        shareEndpoint: '',
+        shareEndpoint: 'https://flareapp.io/api/public-reports',
         defaultTab: 'StackTab',
         defaultTabProps: {},
     }).start();

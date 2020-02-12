@@ -15,7 +15,7 @@ export default class Ignition {
         directorySeparator: '/',
         editor: 'vscode',
         enableRunnableSolutions: false,
-        enableShareButton: false,
+        enableShareButton: true,
         localSitesPath: '',
         remoteSitesPath: '',
         theme: 'light',
@@ -113,6 +113,7 @@ export default class Ignition {
 
         // Generate a report for the error and show it in the container
         this.flare.createReport(this.errors[value]).then((report: FlareReport) => {
+            console.log(report);
             const ignitionLoaderContent = hydrateIgnitionLoader(ignitionLoaderScript, {
                 report: addRequiredContext(report),
                 config: this.config,
