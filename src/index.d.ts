@@ -1,5 +1,5 @@
 type InitParams = {
-    config: Ignition.config;
+    config?: Ignition.config;
 };
 
 declare module 'ignitionIframeScript' {

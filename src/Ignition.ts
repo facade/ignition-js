@@ -11,7 +11,7 @@ import { addRequiredContext, hydrateIgnitionLoader } from './util';
 import FlareClient from '@flareapp/flare-client/src/FlareClient';
 
 export default class Ignition {
-    config: Ignition.config = {
+    public config: Ignition.config = {
         directorySeparator: '/',
         editor: 'vscode',
         enableRunnableSolutions: false,
@@ -21,15 +21,19 @@ export default class Ignition {
         theme: 'light',
     };
 
-    flare: FlareClient;
+    public flare: FlareClient = window.flare;
 
-    errors: Array<Error> = [];
+    public errors: Array<Error> = [];
 
-    iframe: HTMLIFrameElement | null = null;
+    private iframe: HTMLIFrameElement | null = null;
 
     constructor({ config }: InitParams) {
         this.config = { ...this.config, ...config };
 
+        this.initializeFlare();
+    }
+
+    private initializeFlare() {
         // initialize the Flare client if it wasn't already initialized
         if (!window.flare) {
             require('@flareapp/flare-client');
@@ -37,10 +41,6 @@ export default class Ignition {
 
         this.flare = window.flare;
 
-        this.initializeFlare();
-    }
-
-    private initializeFlare() {
         this.flare.beforeEvaluate = (error: Error) => {
             this.errors.push(error);
 
