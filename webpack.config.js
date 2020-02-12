@@ -29,7 +29,7 @@ module.exports = {
             vue$: 'vue/dist/vue.esm.js',
             ignitionIframeScript$: path.resolve(
                 __dirname,
-                './node_modules/@flareapp/ignition-ui/compiled/ignition.js',
+                './node_modules/@facadecompany/ignition-ui/compiled/ignition.js',
             ),
         },
     },

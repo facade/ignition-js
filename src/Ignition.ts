@@ -113,7 +113,6 @@ export default class Ignition {
 
         // Generate a report for the error and show it in the container
         this.flare.createReport(this.errors[value]).then((report: FlareReport) => {
-            console.log(report);
             const ignitionLoaderContent = hydrateIgnitionLoader(ignitionLoaderScript, {
                 report: addRequiredContext(report),
                 config: this.config,

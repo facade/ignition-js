@@ -1,14 +1,25 @@
 {
-    "name": "@flareapp/ignition-js",
+    "name": "@facadecompany/ignition-js",
     "main": "dist/index.js",
-    "private": true,
+    "version": "0.0.1",
+    "description": "A beautiful error page for inspecting your JavaScript errors more closely",
+    "homepage": "https://flareapp.io/ignition",
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/facade/ignition-js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/facade/ignition-js/issues"
+    },
     "scripts": {
         "watch": "webpack --mode development --watch",
         "build": "NODE_ENV=production webpack --mode production",
         "format": "prettier --write 'src/**/*.{js,ts}'"
     },
     "dependencies": {
-        "@flareapp/flare-client": "^1.0.0"
+        "@flareapp/flare-client": "^1.0.0",
+        "@facadecompany/ignition-ui": "^0.0.1"
     },
     "devDependencies": {
         "@babel/core": "^7.4.5",
