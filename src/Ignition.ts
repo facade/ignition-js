@@ -51,9 +51,7 @@ export default class Ignition {
     }
 
     private showIgnitionErrorSelector() {
-        let selector: HTMLSelectElement = document.getElementById(
-            '__ignition__selector',
-        ) as HTMLSelectElement;
+        let selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
 
         if (!selector) {
             const div = document.createElement('div');
