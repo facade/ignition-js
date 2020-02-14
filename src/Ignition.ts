@@ -77,23 +77,6 @@ export default class Ignition {
         );
     }
 
-    private showErrorIframe() {
-        const existingModal = document.getElementById('__ignition__modal');
-
-        if (!existingModal) {
-            const errorModal = document.createElement('div');
-            errorModal.id = '__ignition__modal';
-            errorModal.innerHTML = ignitionErrorContainerHTML;
-            document.body.appendChild(errorModal);
-
-            document
-                .getElementById('__ignition__close')!
-                .addEventListener('click', () => errorModal.remove());
-        }
-
-        this.iframe = document.querySelector('#__ignition__modal iframe') as HTMLIFrameElement;
-    }
-
     private handleSelectError(e: Event) {
         // @ts-ignore
         const { value } = e.target;
@@ -126,15 +109,34 @@ export default class Ignition {
             div.innerHTML = iframeHTMl;
             this.iframe.contentDocument!.body.appendChild(div);
 
+            // Adding ignition-ui and the initialization script to the iframe's body
             this.addScriptToIframe(this.iframe, ignitionIframeScript);
             this.addScriptToIframe(this.iframe, ignitionLoaderContent);
         });
+    }
+
+    private showErrorIframe() {
+        const existingModal = document.getElementById('__ignition__modal');
+
+        if (!existingModal) {
+            const errorModal = document.createElement('div');
+            errorModal.id = '__ignition__modal';
+            errorModal.innerHTML = ignitionErrorContainerHTML;
+            document.body.appendChild(errorModal);
+
+            document
+                .getElementById('__ignition__close')!
+                .addEventListener('click', () => errorModal.remove());
+        }
+
+        this.iframe = document.querySelector('#__ignition__modal iframe') as HTMLIFrameElement;
     }
 
     private addScriptToIframe(iframeElement: HTMLIFrameElement, scriptString: string) {
         const script = iframeElement.contentWindow!.document.createElement('script');
         script.type = 'text/javascript';
         script.innerHTML = scriptString;
+
         iframeElement.contentDocument!.body.appendChild(script);
     }
 }
