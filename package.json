@@ -18,7 +18,9 @@
         "format": "prettier --write 'src/**/*.{js,ts}'"
     },
     "dependencies": {
-        "@flareapp/flare-client": "^1.0.0"
+        "@flareapp/flare-client": "^1.0.0",
+        "@flareapp/flare-react": "^1.0.3",
+        "@flareapp/flare-vue": "^1.0.3"
     },
     "devDependencies": {
         "@babel/core": "^7.4.5",
