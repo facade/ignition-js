@@ -1,5 +1,6 @@
 // Importing ignition-ui as a string using raw-loader (see webpack config)
 import ignitionIframeScript from 'ignitionIframeScript';
+import { flareVue } from '@flareapp/flare-vue';
 
 import {
     ignitionErrorSelectorHTML,
@@ -19,6 +20,7 @@ export default class Ignition {
         localSitesPath: '',
         remoteSitesPath: '',
         theme: 'light',
+        Vue: undefined,
     };
 
     public flare: FlareClient = window.flare;
@@ -31,6 +33,7 @@ export default class Ignition {
         this.config = { ...this.config, ...config };
 
         this.initializeFlare();
+        this.initializeVue();
     }
 
     private initializeFlare() {
@@ -48,6 +51,12 @@ export default class Ignition {
 
             return false;
         };
+    }
+
+    private initializeVue() {
+        if (this.config.Vue) {
+            this.config.Vue.use(flareVue);
+        }
     }
 
     private showIgnitionErrorSelector() {
