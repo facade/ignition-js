@@ -5,10 +5,10 @@ import { flareVue } from '@flareapp/flare-vue';
 import {
     ignitionErrorSelectorHTML,
     ignitionErrorContainerHTML,
-    ignitionLoaderScript,
     iframeHTMl,
+    debugScript,
 } from './htmlStrings';
-import { addRequiredContext, hydrateIgnitionLoader } from './util';
+import { addRequiredContext, hydrateIgnitionLoader, addScriptToIframe } from './util';
 import FlareClient from '@flareapp/flare-client/src/FlareClient';
 
 export default class Ignition {
@@ -103,7 +103,7 @@ export default class Ignition {
 
         // Generate a report for the error and show it in the container
         this.flare.createReport(this.errors[value]).then((report: FlareReport) => {
-            const ignitionLoaderContent = hydrateIgnitionLoader(ignitionLoaderScript, {
+            const ignitionLoaderContent = hydrateIgnitionLoader({
                 report: addRequiredContext(report),
                 config: this.config,
             });
@@ -117,8 +117,20 @@ export default class Ignition {
             this.iframe.contentDocument!.body.appendChild(div);
 
             // Adding ignition-ui and the initialization script to the iframe's body
-            this.addScriptToIframe(this.iframe, ignitionIframeScript);
-            this.addScriptToIframe(this.iframe, ignitionLoaderContent);
+            addScriptToIframe(this.iframe, ignitionIframeScript);
+            addScriptToIframe(this.iframe, ignitionLoaderContent);
+
+            // Calling console.log on all console logs inside of the iframe
+            if (process.env.NODE_ENV === 'development') {
+                addScriptToIframe(this.iframe, debugScript);
+
+                (this.iframe.contentWindow!.console as any).addEventListener(
+                    'log',
+                    (value: any) => {
+                        console.log.apply(null, value);
+                    },
+                );
+            }
         });
     }
 
@@ -137,13 +149,5 @@ export default class Ignition {
         }
 
         this.iframe = document.querySelector('#__ignition__modal iframe') as HTMLIFrameElement;
-    }
-
-    private addScriptToIframe(iframeElement: HTMLIFrameElement, scriptString: string) {
-        const script = iframeElement.contentWindow!.document.createElement('script');
-        script.type = 'text/javascript';
-        script.innerHTML = scriptString;
-
-        iframeElement.contentDocument!.body.appendChild(script);
     }
 }
