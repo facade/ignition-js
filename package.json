@@ -15,7 +15,8 @@
     "scripts": {
         "watch": "webpack --mode development --watch",
         "build": "NODE_ENV=production webpack --mode production",
-        "format": "prettier --write 'src/**/*.{js,ts}'"
+        "format": "prettier --write 'src/**/*.{js,ts}'",
+        "prepublishOnly": "yarn build"
     },
     "dependencies": {
         "@flareapp/flare-client": "^1.0.0",
