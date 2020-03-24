@@ -21,6 +21,7 @@
         "@flareapp/flare-client": "^1.0.0",
         "@flareapp/flare-react": "^1.0.3",
         "@flareapp/flare-vue": "^1.0.3",
+        "source-map-resolve": "^0.6.0",
         "vue": "^2.6.11"
     },
     "devDependencies": {

@@ -6,10 +6,7 @@ declare module 'ignitionIframeScript' {
     export default string;
 }
 
-type FlareReport = {
-    context: {};
-    solutions: Array<{}>;
-};
+type FlareReport = import('@flareapp/flare-client/src/types').Flare.ErrorReport;
 
 interface Window {
     flare: import('node_modules/@flareapp/flare-client/src/FlareClient').default;

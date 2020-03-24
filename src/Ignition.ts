@@ -10,6 +10,7 @@ import {
 } from './htmlStrings';
 import { addRequiredContext, hydrateIgnitionLoader, addScriptToIframe } from './util';
 import FlareClient from '@flareapp/flare-client/src/FlareClient';
+import { resolveStack } from './sourcemaps';
 
 export default class Ignition {
     public config: Ignition.config = {
@@ -103,6 +104,9 @@ export default class Ignition {
 
         // Generate a report for the error and show it in the container
         this.flare.createReport(this.errors[value]).then((report: FlareReport) => {
+            // Use sourcemaps to resolve the bundled code to its original format
+            const resolvedStack = resolveStack(report.stacktrace);
+
             const ignitionLoaderContent = hydrateIgnitionLoader({
                 report: addRequiredContext(report),
                 config: this.config,
@@ -120,7 +124,7 @@ export default class Ignition {
             addScriptToIframe(this.iframe, ignitionIframeScript);
             addScriptToIframe(this.iframe, ignitionLoaderContent);
 
-            // Calling console.log on all console logs inside of the iframe
+            // Allow iframe console.log calls to reach the console
             if (process.env.NODE_ENV === 'development') {
                 addScriptToIframe(this.iframe, debugScript);
 
