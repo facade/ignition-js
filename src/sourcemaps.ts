@@ -1,43 +1,90 @@
-import sourceMapResolve from 'source-map-resolve'; // https://github.com/lydell/source-map-resolve#readme
+import sourceMap from 'source-map';
+const wasmMappings = require('source-map/lib/mappings.wasm');
 
-export function resolveStack(stacktrace: FlareReport['stacktrace']) {
-    return new Promise(async resolve => {
-        const resolvedStack: FlareReport['stacktrace'] = await Promise.all(
+// @ts-ignore
+sourceMap.SourceMapConsumer.initialize({ 'lib/mappings.wasm': wasmMappings });
+
+const sourceMappingURLString = '//# sourceMappingURL=';
+
+export function resolveStack(stacktrace: Flare.Report['stacktrace']) {
+    return new Promise(resolve => {
+        Promise.all(
             stacktrace.map(async frame => {
-                const code = await readFile(frame.file);
+                const sourcemap = await getSourcemap(frame.file);
 
-                if (!code) {
+                if (!sourcemap) {
                     return frame;
                 }
 
-                sourceMapResolve.resolveSourceMap(
-                    code.slice(-100),
-                    frame.file,
-                    readFileCallback,
-                    (error: Error, result) => {
-                        if (error) {
-                            console.error('error:', error);
-                            /* console.error(error); */
+                const resolvedCode = await sourceMap.SourceMapConsumer.with(
+                    sourcemap,
+                    null,
+                    consumer => {
+                        const originalPosition = consumer.originalPositionFor({
+                            line: frame.line_number,
+                            column: frame.column_number,
+                        });
+
+                        if (
+                            !originalPosition.source ||
+                            !originalPosition.column ||
+                            !originalPosition.line
+                        ) {
+                            return frame;
                         }
 
-                        console.log('res:', result);
-                        return 'kek';
+                        const codeSnippetText = consumer.sourceContentFor(originalPosition.source);
+
+                        // If performance is bad, the `reduce` could be replaced by an unshift to add an empty first item
+                        const codeSnippet = codeSnippetText
+                            ? codeSnippetText.split('\n').reduce(
+                                  (codeSnippet, text, i) => {
+                                      codeSnippet[i + 1] = text;
+                                      return codeSnippet;
+                                  },
+                                  {} as { [key: number]: string },
+                              )
+                            : frame.code_snippet;
+
+                        return {
+                            line_number: originalPosition.line,
+                            column_number: originalPosition.column,
+                            method: originalPosition.name || frame.method,
+                            file: originalPosition.source.replace('webpack://', ''),
+                            code_snippet: codeSnippet,
+                            trimmed_column_number: frame.trimmed_column_number,
+                            class: frame.class,
+                        };
                     },
                 );
-            }),
-        );
 
-        resolve(resolvedStack);
+                return resolvedCode;
+            }),
+        ).then(resolve);
     });
 }
 
-const cachedFiles: { [key: string]: string } = {};
+async function getSourcemap(file: string): Promise<null | string> {
+    const code = await readFile(file);
 
-async function readFileCallback(url: string, callback: (result: string | null) => void) {
-    const result = await readFile(url);
+    if (!code) {
+        return null;
+    }
 
-    callback(result);
+    const sourceMappingURLIndex = code.lastIndexOf(sourceMappingURLString);
+
+    if (sourceMappingURLIndex === -1) {
+        return null;
+    }
+
+    const sourceMappingURL = code.slice(sourceMappingURLIndex + sourceMappingURLString.length);
+    const searchFrom = file.slice(0, file.lastIndexOf('/') + 1);
+    const sourcemap = await readFile(searchFrom + sourceMappingURL);
+
+    return sourcemap;
 }
+
+const cachedFiles: { [key: string]: string } = {};
 
 function readFile(url: string): Promise<string | null> {
     return new Promise(resolve => {

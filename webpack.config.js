@@ -12,6 +12,11 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.wasm$/,
+                type: 'javascript/auto',
+                loaders: ['arraybuffer-loader'],
+            },
+            {
                 test: /\.(js|ts?)$/,
                 use: 'babel-loader',
                 exclude: /node_modules/,

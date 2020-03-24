@@ -6,7 +6,11 @@ declare module 'ignitionIframeScript' {
     export default string;
 }
 
-type FlareReport = import('@flareapp/flare-client/src/types').Flare.ErrorReport;
+namespace Flare {
+    type Report = import('@flareapp/flare-client/src/types').Flare.ErrorReport;
+
+    type StackFrame = import('@flareapp/flare-client/src/types').Flare.StackFrame;
+}
 
 interface Window {
     flare: import('node_modules/@flareapp/flare-client/src/FlareClient').default;

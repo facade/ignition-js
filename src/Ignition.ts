@@ -85,7 +85,7 @@ export default class Ignition {
         );
     }
 
-    private handleSelectError(e: Event) {
+    private async handleSelectError(e: Event) {
         // @ts-ignore
         const { value } = e.target;
 
@@ -102,40 +102,42 @@ export default class Ignition {
         // Clear the iframe in case we were already displaying an error.
         this.iframe.contentDocument!.body.innerHTML = '';
 
-        // Generate a report for the error and show it in the container
-        this.flare.createReport(this.errors[value]).then((report: FlareReport) => {
-            // Use sourcemaps to resolve the bundled code to its original format
-            const resolvedStack = resolveStack(report.stacktrace);
+        // Generate a report for the error
+        const report = await this.flare.createReport(this.errors[value]);
 
-            const ignitionLoaderContent = hydrateIgnitionLoader({
-                report: addRequiredContext(report),
-                config: this.config,
-            });
+        if (!report) {
+            return;
+        }
 
-            if (!this.iframe) {
-                return;
-            }
+        // Use sourcemaps to resolve the bundled code to its original format
+        const resolvedStack = await resolveStack(report.stacktrace);
 
-            const div = this.iframe.contentWindow!.document.createElement('div');
-            div.innerHTML = iframeHTMl;
-            this.iframe.contentDocument!.body.appendChild(div);
-
-            // Adding ignition-ui and the initialization script to the iframe's body
-            addScriptToIframe(this.iframe, ignitionIframeScript);
-            addScriptToIframe(this.iframe, ignitionLoaderContent);
-
-            // Allow iframe console.log calls to reach the console
-            if (process.env.NODE_ENV === 'development') {
-                addScriptToIframe(this.iframe, debugScript);
-
-                (this.iframe.contentWindow!.console as any).addEventListener(
-                    'log',
-                    (value: any) => {
-                        console.log.apply(null, value);
-                    },
-                );
-            }
+        // Show the report in the ignition container
+        const ignitionLoaderContent = hydrateIgnitionLoader({
+            report: addRequiredContext({ ...report, stacktrace: resolvedStack }),
+            config: this.config,
         });
+
+        if (!this.iframe) {
+            return;
+        }
+
+        const div = this.iframe.contentWindow!.document.createElement('div');
+        div.innerHTML = iframeHTMl;
+        this.iframe.contentDocument!.body.appendChild(div);
+
+        // Adding ignition-ui and the initialization script to the iframe's body
+        addScriptToIframe(this.iframe, ignitionIframeScript);
+        addScriptToIframe(this.iframe, ignitionLoaderContent);
+
+        // Allow iframe console.log calls to reach the console
+        if (process.env.NODE_ENV === 'development') {
+            addScriptToIframe(this.iframe, debugScript);
+
+            (this.iframe.contentWindow!.console as any).addEventListener('log', (value: any) => {
+                console.log.apply(null, value);
+            });
+        }
     }
 
     private showErrorIframe() {
