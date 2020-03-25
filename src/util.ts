@@ -1,8 +1,9 @@
 import { ignitionLoaderScript } from './htmlStrings';
 
-export function addRequiredContext(report: FlareReport) {
+export function addRequiredContext(report: Flare.Report) {
     return {
         ...report,
+        application_path: '', // TODO: add application path if we add it in https://github.com/facade/ignition-js/issues/14
         context: {
             ...report.context,
             request_data: {},
@@ -17,7 +18,7 @@ export function addRequiredContext(report: FlareReport) {
 }
 
 type HydrateIgnitionLoaderParams = {
-    report: FlareReport;
+    report: Flare.Report;
     config: {};
 };
 
