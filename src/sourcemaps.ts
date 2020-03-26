@@ -1,4 +1,6 @@
 import sourceMap from 'source-map';
+import { readLinesFromFile } from '@flareapp/flare-client';
+import { isUndefinedOrNull } from './util';
 const wasmMappings = require('source-map/lib/mappings.wasm');
 
 // @ts-ignore
@@ -6,7 +8,9 @@ sourceMap.SourceMapConsumer.initialize({ 'lib/mappings.wasm': wasmMappings });
 
 const sourceMappingURLString = '//# sourceMappingURL=';
 
-export function resolveStack(stacktrace: Flare.Report['stacktrace']) {
+export function resolveStack(
+    stacktrace: Flare.Report['stacktrace'],
+): Promise<Flare.Report['stacktrace']> {
     return new Promise(resolve => {
         Promise.all(
             stacktrace.map(async frame => {
@@ -26,33 +30,35 @@ export function resolveStack(stacktrace: Flare.Report['stacktrace']) {
                         });
 
                         if (
-                            !originalPosition.source ||
-                            !originalPosition.column ||
-                            !originalPosition.line
+                            isUndefinedOrNull(originalPosition.source) ||
+                            isUndefinedOrNull(originalPosition.column) ||
+                            isUndefinedOrNull(originalPosition.line)
                         ) {
                             return frame;
                         }
 
-                        const codeSnippetText = consumer.sourceContentFor(originalPosition.source);
+                        const codeSnippetText = consumer.sourceContentFor(originalPosition.source!);
 
-                        // If performance is bad, the `reduce` could be replaced by an unshift to add an empty first item
-                        const codeSnippet = codeSnippetText
-                            ? codeSnippetText.split('\n').reduce(
-                                  (codeSnippet, text, i) => {
-                                      codeSnippet[i + 1] = text;
-                                      return codeSnippet;
-                                  },
-                                  {} as { [key: number]: string },
+                        const { codeSnippet, trimmedColumnNumber } = codeSnippetText
+                            ? readLinesFromFile(
+                                  codeSnippetText,
+                                  originalPosition.line!,
+                                  originalPosition.column!,
+                                  1000,
+                                  50,
                               )
-                            : frame.code_snippet;
+                            : {
+                                  codeSnippet: frame.code_snippet,
+                                  trimmedColumnNumber: frame.trimmed_column_number,
+                              };
 
                         return {
-                            line_number: originalPosition.line,
-                            column_number: originalPosition.column,
+                            line_number: originalPosition.line!,
+                            column_number: originalPosition.column!,
                             method: originalPosition.name || frame.method,
-                            file: originalPosition.source.replace('webpack://', ''),
+                            file: originalPosition.source!.replace('webpack://', ''),
                             code_snippet: codeSnippet,
-                            trimmed_column_number: frame.trimmed_column_number,
+                            trimmed_column_number: trimmedColumnNumber,
                             class: frame.class,
                         };
                     },

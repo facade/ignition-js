@@ -36,3 +36,11 @@ export function addScriptToIframe(iframeElement: HTMLIFrameElement, scriptString
 
     iframeElement.contentDocument!.body.appendChild(script);
 }
+
+export function isUndefinedOrNull(value: any) {
+    if (value === null || value === undefined) {
+        return true;
+    }
+
+    return false;
+}
