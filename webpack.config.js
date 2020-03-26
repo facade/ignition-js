@@ -39,6 +39,10 @@ module.exports = {
         },
     },
 
+    externals: {
+        react: 'react',
+    },
+
     stats: 'minimal',
 
     performance: {
