@@ -26,5 +26,6 @@ namespace Ignition {
         remoteSitesPath: string;
         theme: 'light' | 'dark';
         Vue?: import('vue/types').VueConstructor;
+        applicationPath?: string;
     };
 }

@@ -9,7 +9,7 @@ import {
     iframeHTMl,
     debugScript,
 } from './htmlStrings';
-import { addRequiredContext, hydrateIgnitionLoader, addScriptToIframe } from './util';
+import { hydrateIgnitionLoader, addScriptToIframe } from './util';
 import FlareClient from '@flareapp/flare-client/src/FlareClient';
 import { resolveStack } from './sourcemaps';
 
@@ -23,6 +23,7 @@ export default class Ignition {
         remoteSitesPath: '',
         theme: 'light',
         Vue: undefined,
+        applicationPath: undefined,
     };
 
     public flare: FlareClient = window.flare;
@@ -126,7 +127,7 @@ export default class Ignition {
 
         // Show the report in the ignition container
         const ignitionLoaderContent = hydrateIgnitionLoader({
-            report: addRequiredContext({ ...report, stacktrace: resolvedStack }),
+            report: { ...report, stacktrace: resolvedStack },
             config: this.config,
         });
 

@@ -10,6 +10,7 @@ export const ignitionErrorSelectorHTML = `
             font-size: 16px;
             background-color: #f44336;
             color: #FFFFFF;
+            z-index: 5;
         "
     >
         <option value="placeholder"></option>
