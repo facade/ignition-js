@@ -1,7 +1,10 @@
 import sourceMap from 'source-map';
 import { readLinesFromFile } from '@flareapp/flare-client';
 import { isUndefinedOrNull } from './util';
+
 const wasmMappings = require('source-map/lib/mappings.wasm');
+
+// If performance of the sourcemap resolving is not great, check out https://github.com/facade/ignition-js/issues/24
 
 // @ts-ignore
 sourceMap.SourceMapConsumer.initialize({ 'lib/mappings.wasm': wasmMappings });

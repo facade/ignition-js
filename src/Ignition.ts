@@ -30,7 +30,9 @@ export default class Ignition {
 
     public errors: Array<{ error: Error; hash: string; occurrences: number }> = [];
 
-    private iframe: HTMLIFrameElement | null = null;
+    private errorIframe: HTMLIFrameElement | null = null;
+    private selectIframe: HTMLIFrameElement | null = null;
+    private dropdownIframe: HTMLIFrameElement | null = null;
 
     constructor({ config }: InitParams) {
         this.config = { ...this.config, ...config };
@@ -108,12 +110,12 @@ export default class Ignition {
 
         this.showErrorIframe();
 
-        if (!this.iframe) {
+        if (!this.errorIframe) {
             return;
         }
 
         // Clear the iframe in case we were already displaying an error.
-        this.iframe.contentDocument!.body.innerHTML = '';
+        this.errorIframe.contentDocument!.body.innerHTML = '';
 
         // Generate a report for the error
         const report = await this.flare.createReport(this.errors[value].error);
@@ -131,25 +133,28 @@ export default class Ignition {
             config: this.config,
         });
 
-        if (!this.iframe) {
+        if (!this.errorIframe) {
             return;
         }
 
-        const div = this.iframe.contentWindow!.document.createElement('div');
+        const div = this.errorIframe.contentWindow!.document.createElement('div');
         div.innerHTML = iframeHTMl;
-        this.iframe.contentDocument!.body.appendChild(div);
+        this.errorIframe.contentDocument!.body.appendChild(div);
 
         // Adding ignition-ui and the initialization script to the iframe's body
-        addScriptToIframe(this.iframe, ignitionIframeScript);
-        addScriptToIframe(this.iframe, ignitionLoaderContent);
+        addScriptToIframe(this.errorIframe, ignitionIframeScript);
+        addScriptToIframe(this.errorIframe, ignitionLoaderContent);
 
         // Allow iframe console.log calls to reach the console
         if (process.env.NODE_ENV === 'development') {
-            addScriptToIframe(this.iframe, debugScript);
+            addScriptToIframe(this.errorIframe, debugScript);
 
-            (this.iframe.contentWindow!.console as any).addEventListener('log', (value: any) => {
-                console.log.apply(null, value);
-            });
+            (this.errorIframe.contentWindow!.console as any).addEventListener(
+                'log',
+                (value: any) => {
+                    console.log.apply(null, value);
+                },
+            );
         }
     }
 
@@ -167,6 +172,6 @@ export default class Ignition {
                 .addEventListener('click', () => errorModal.remove());
         }
 
-        this.iframe = document.querySelector('#__ignition__modal iframe') as HTMLIFrameElement;
+        this.errorIframe = document.querySelector('#__ignition__modal iframe') as HTMLIFrameElement;
     }
 }
