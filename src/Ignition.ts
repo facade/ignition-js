@@ -1,6 +1,7 @@
 // Importing ignition-ui as a string using raw-loader (see webpack config)
 import ignitionIframeScript from 'ignitionIframeScript';
 import { flareVue } from '@flareapp/flare-vue';
+import getObjectHash from 'object-hash';
 
 import {
     ignitionErrorSelectorHTML,
@@ -26,7 +27,7 @@ export default class Ignition {
 
     public flare: FlareClient = window.flare;
 
-    public errors: Array<Error> = [];
+    public errors: Array<{ error: Error; hash: string; occurrences: number }> = [];
 
     private iframe: HTMLIFrameElement | null = null;
 
@@ -46,9 +47,20 @@ export default class Ignition {
         this.flare = window.flare;
 
         this.flare.beforeEvaluate = (error: Error) => {
-            this.errors.push(error);
+            const hash = getObjectHash(error);
+            const existingErrorIndex = this.errors.findIndex(error => error.hash === hash);
 
-            this.showIgnitionErrorSelector();
+            // an error with this hash already exists, so we add 1 to the occurrences count
+            if (existingErrorIndex !== -1) {
+                this.errors[existingErrorIndex].occurrences += 1;
+            }
+
+            // no error with this hash exists yet, so we create a new one
+            if (existingErrorIndex === -1) {
+                this.errors.push({ error, hash, occurrences: 1 });
+
+                this.showIgnitionErrorSelector();
+            }
 
             return false;
         };
@@ -81,7 +93,7 @@ export default class Ignition {
         const index = this.errors.length - 1;
 
         selector.options.add(
-            new Option(`Error ${index + 1}: ${this.errors[index].message}`, index.toString()),
+            new Option(`Error ${index + 1}: ${this.errors[index].error.message}`, index.toString()),
         );
     }
 
@@ -103,7 +115,7 @@ export default class Ignition {
         this.iframe.contentDocument!.body.innerHTML = '';
 
         // Generate a report for the error
-        const report = await this.flare.createReport(this.errors[value]);
+        const report = await this.flare.createReport(this.errors[value].error);
 
         if (!report) {
             return;
