@@ -2,15 +2,12 @@ import sourceMap from 'source-map';
 import { readLinesFromFile } from '@flareapp/flare-client';
 import { isUndefinedOrNull } from './util';
 
-const wasmMappings = require('source-map/lib/mappings.wasm');
-
-// If performance of the sourcemap resolving is not great, check out https://github.com/facade/ignition-js/issues/24
-
 // @ts-ignore
-sourceMap.SourceMapConsumer.initialize({ 'lib/mappings.wasm': wasmMappings });
+sourceMap.SourceMapConsumer.initialize({
+    'lib/mappings.wasm': require('source-map/lib/mappings.wasm'),
+});
 
-const sourceMappingURLString = '//# sourceMappingURL=';
-
+// If performance of the sourcemap resolving is not great, see https://github.com/facade/ignition-js/issues/24
 export function resolveStack(
     stacktrace: Flare.Report['stacktrace'],
 ): Promise<Flare.Report['stacktrace']> {
@@ -72,6 +69,8 @@ export function resolveStack(
         ).then(resolve);
     });
 }
+
+const sourceMappingURLString = '//# sourceMappingURL=';
 
 async function getSourcemap(file: string): Promise<null | string> {
     const code = await readFile(file);

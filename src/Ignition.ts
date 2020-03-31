@@ -145,7 +145,7 @@ export default class Ignition {
         addScriptToIframe(this.errorIframe, ignitionIframeScript);
         addScriptToIframe(this.errorIframe, ignitionLoaderContent);
 
-        // Allow iframe console.log calls to reach the console
+        // Allow iframe console.log calls to reach the console when developing ignition-js
         if (process.env.NODE_ENV === 'development') {
             addScriptToIframe(this.errorIframe, debugScript);
 
