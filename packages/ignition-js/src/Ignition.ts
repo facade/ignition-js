@@ -1,7 +1,10 @@
-// Importing ignition-ui as a string using raw-loader (see webpack config)
-import ignitionIframeScript from 'ignitionIframeScript';
 import { flareVue } from '@flareapp/flare-vue';
 import getObjectHash from 'object-hash';
+
+// Importing scripts as string using raw-loader (see webpack config)
+import ignitionIframeScript from 'ignitionIframeScript';
+import dropdownIframeScript from 'dropdownIframeScript';
+import selectorIframeScript from 'selectorIframeScript';
 
 import {
     ignitionErrorSelectorHTML,
@@ -79,6 +82,8 @@ export default class Ignition {
         let selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
 
         if (!selector) {
+            // TODO: create 2 iframes to house the selector and dropdown
+
             const div = document.createElement('div');
             div.innerHTML = ignitionErrorSelectorHTML;
 

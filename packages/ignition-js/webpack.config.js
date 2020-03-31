@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: { index: './src/app.ts' },
+    entry: { index: './src/index.ts' },
 
     output: {
         path: `${__dirname}/dist`,
@@ -22,7 +22,7 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /ignition\.js$/,
+                test: /ignition\.js|dropdown\.js|selector\.js/,
                 use: 'raw-loader',
             },
         ],
@@ -35,6 +35,14 @@ module.exports = {
             ignitionIframeScript$: path.resolve(
                 __dirname,
                 './node_modules/@facadecompany/ignition-ui/compiled/ignition.js',
+            ),
+            dropdownIframeScript$: path.resolve(
+                __dirname,
+                './node_modules/@facadecompany/ignition-dropdown/dist/dropdown.js',
+            ),
+            selectorIframeScript$: path.resolve(
+                __dirname,
+                './node_modules/@facadecompany/ignition-dropdown/dist/selector.js',
             ),
         },
     },

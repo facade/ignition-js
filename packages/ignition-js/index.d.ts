@@ -5,6 +5,12 @@ type InitParams = {
 declare module 'ignitionIframeScript' {
     export default string;
 }
+declare module 'selectorIframeScript' {
+    export default string;
+}
+declare module 'dropdownIframeScript' {
+    export default string;
+}
 
 namespace Flare {
     type Report = import('@flareapp/flare-client/src/types').Flare.ErrorReport;
