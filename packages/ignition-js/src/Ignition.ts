@@ -3,14 +3,17 @@ import getObjectHash from 'object-hash';
 
 // Importing scripts as string using raw-loader (see webpack config)
 import ignitionIframeScript from 'ignitionIframeScript';
+/* import selectorIframeScript from 'selectorIframeScript'; */
 import dropdownIframeScript from 'dropdownIframeScript';
-import selectorIframeScript from 'selectorIframeScript';
 
 import {
     ignitionErrorSelectorHTML,
     ignitionErrorContainerHTML,
     iframeHTMl,
     debugScript,
+    selectorHTML,
+    dropdownHTML,
+    selectorIframeScript,
 } from './htmlStrings';
 import { hydrateIgnitionLoader, addScriptToIframe } from './util';
 import FlareClient from '@flareapp/flare-client/src/FlareClient';
@@ -34,7 +37,7 @@ export default class Ignition {
     public errors: Array<{ error: Error; hash: string; occurrences: number }> = [];
 
     private errorIframe: HTMLIFrameElement | null = null;
-    private selectIframe: HTMLIFrameElement | null = null;
+    private selectorIframe: HTMLIFrameElement | null = null;
     private dropdownIframe: HTMLIFrameElement | null = null;
 
     constructor({ config }: InitParams) {
@@ -65,7 +68,7 @@ export default class Ignition {
             if (existingErrorIndex === -1) {
                 this.errors.push({ error, hash, occurrences: 1 });
 
-                this.showIgnitionErrorSelector();
+                this.updateIgnitionErrorSelector();
             }
 
             return false;
@@ -78,7 +81,7 @@ export default class Ignition {
         }
     }
 
-    private showIgnitionErrorSelector() {
+    /* private showIgnitionErrorSelector() {
         let selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
 
         if (!selector) {
@@ -103,6 +106,65 @@ export default class Ignition {
         selector.options.add(
             new Option(`Error ${index + 1}: ${this.errors[index].error.message}`, index.toString()),
         );
+    } */
+
+    private updateIgnitionErrorSelector() {
+        let selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
+
+        if (!selector) {
+            // If the selector hasn't been created yet, create it now
+            this.showIgnitionErrorSelector();
+
+            const div = document.createElement('div');
+            div.innerHTML = ignitionErrorSelectorHTML;
+
+            document.body.appendChild(div);
+
+            selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
+
+            selector.addEventListener('change', e => this.handleSelectError(e));
+        }
+
+        selector.options[0].text = `Ignition found ${this.errors.length} error${
+            this.errors.length > 1 ? 's' : ''
+        } (click to show)`;
+
+        const index = this.errors.length - 1;
+
+        selector.options.add(
+            new Option(`Error ${index + 1}: ${this.errors[index].error.message}`, index.toString()),
+        );
+    }
+
+    private showIgnitionErrorSelector() {
+        const selectorIframe = document.createElement('iframe');
+        const dropdownIframe = document.createElement('iframe');
+
+        selectorIframe.setAttribute(
+            'style',
+            'height: 50px; width: 300px; border: none; position: absolute; bottom: 0; right: 0; z-index: 100;',
+        );
+        dropdownIframe.setAttribute(
+            'style',
+            'height: 50px; width: 300px; border: none; position: absolute; bottom: 50px; right: 0; z-index: 100;',
+        );
+
+        document.body.appendChild(selectorIframe);
+        document.body.appendChild(dropdownIframe);
+
+        selectorIframe.contentDocument!.body.innerHTML = selectorHTML;
+        dropdownIframe.contentDocument!.body.innerHTML = dropdownHTML;
+
+        addScriptToIframe(selectorIframe, selectorIframeScript);
+        addScriptToIframe(dropdownIframe, dropdownIframeScript);
+
+        (selectorIframe.contentWindow! as any).listener.addEventListener('clicked', () => {
+            // TODO: show dropdown iframe & add an event listener on the document to close it when clicking outside of it?
+            console.log('clicked!');
+        });
+
+        this.selectorIframe = selectorIframe;
+        this.dropdownIframe = dropdownIframe;
     }
 
     private async handleSelectError(e: Event) {
