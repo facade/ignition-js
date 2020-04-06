@@ -92,4 +92,16 @@ var console = {
         this.dispatchEvent('log', a);
     },
 };
+
+// vue-devtools
+(function(d, script) {
+    script = d.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.onload = function(){
+        // remote script has loaded
+    };
+    script.src = 'http://localhost:8098';
+    d.getElementsByTagName('head')[0].appendChild(script);
+}(document));
 `;

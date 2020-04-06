@@ -1,0 +1,35 @@
+0 silly argv {
+0 silly argv   _: [ 'run' ],
+0 silly argv   parallel: true,
+0 silly argv   lernaVersion: '3.20.2',
+0 silly argv   '$0': '/Users/adriaanmarain/projects/ignition-js/node_modules/.bin/lerna',
+0 silly argv   script: 'watch'
+0 silly argv }
+1 notice cli v3.20.2
+2 verbose rootPath /Users/adriaanmarain/projects/ignition-js
+3 info Executing command in 2 packages: "npm run watch"
+4 silly npmRunScript.stream [ 'watch', [], '@facadecompany/ignition-dropdown' ]
+5 silly getExecOpts /Users/adriaanmarain/projects/ignition-js/packages/ignition-dropdown undefined
+6 silly npmRunScript.stream [ 'watch', [], '@facadecompany/ignition-js' ]
+7 silly getExecOpts /Users/adriaanmarain/projects/ignition-js/packages/ignition-js undefined
+8 error Error: Command failed: npm run watch
+8 error npm WARN npm npm does not support Node.js v13.5.0
+8 error npm WARN npm You should probably upgrade to a newer version of node as we
+8 error npm WARN npm can't make any promises that npm will work with this version.
+8 error npm WARN npm Supported releases of Node.js are the latest release of 6, 8, 9, 10, 11.
+8 error npm WARN npm You can find the latest version at https://nodejs.org/
+8 error
+8 error webpack is watching the files…
+8 error
+8 error [BABEL] Note: The code generator has deoptimised the styling of /Users/adriaanmarain/projects/ignition-ui/compiled/ignition.js as it exceeds the max of 500KB.
+8 error [BABEL] Note: The code generator has deoptimised the styling of /Users/adriaanmarain/projects/ignition-ui/compiled/ignition.js as it exceeds the max of 500KB.
+8 error
+8 error
+8 error > @facadecompany/ignition-js@0.0.1 watch /Users/adriaanmarain/projects/ignition-js/packages/ignition-js
+8 error > webpack --mode development --watch
+8 error
+8 error    53 modules
+8 error    53 modules
+8 error
+8 error     at makeError (/Users/adriaanmarain/projects/ignition-js/node_modules/execa/index.js:174:9)
+8 error     at /Users/adriaanmarain/projects/ignition-js/node_modules/execa/index.js:278:16

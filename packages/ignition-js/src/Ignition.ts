@@ -160,6 +160,13 @@ export default class Ignition {
                     console.log.apply(null, value);
                 },
             );
+
+            (this.errorIframe.contentWindow!.console as any).addEventListener(
+                'error',
+                (value: any) => {
+                    console.error.apply(null, value);
+                },
+            );
         }
     }
 
