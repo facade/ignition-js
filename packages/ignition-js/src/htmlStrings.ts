@@ -1,22 +1,3 @@
-export const ignitionErrorSelectorHTML = `
-    <select
-        id="__ignition__selector"
-        style="
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            margin: 10px;
-            border: none;
-            font-size: 16px;
-            background-color: #f44336;
-            color: #FFFFFF;
-            z-index: 5;
-        "
-    >
-        <option value="placeholder"></option>
-    </select>
-`;
-
 export const selectorHTML = `
     <div
         style="
@@ -138,17 +119,11 @@ export const dropdownBridgeScript = `
             }
             return this;
         },
-        click: function() {
-            this.dispatchEvent('click');
+        updateErrors: function(errors) {
+            this.dispatchEvent('errors-updated', errors);
         },
-        notify: function() {
-            var a = [];
-            // For V8 optimization
-            for (var i = 0, n = arguments.length; i < n; i++) {
-                a.push(arguments[i]);
-            }
+        showError: function(error) {
+            this.dispatchEvent('error-clicked', error);
         }
     };
-
-    document.addEventListener('click', () => bridge.click());
 `;

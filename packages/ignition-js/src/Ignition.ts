@@ -7,7 +7,6 @@ import ignitionIframeScript from 'ignitionIframeScript';
 import dropdownIframeScript from 'dropdownIframeScript';
 
 import {
-    ignitionErrorSelectorHTML,
     ignitionErrorContainerHTML,
     iframeHTMl,
     debugScript,
@@ -46,7 +45,11 @@ export default class Ignition {
         this.toggleShowErrorDropdown = this.toggleShowErrorDropdown.bind(this);
 
         this.initializeFlare();
-        this.initializeVue();
+
+        // initialize Vue
+        if (this.config.Vue) {
+            this.config.Vue.use(flareVue);
+        }
     }
 
     private initializeFlare() {
@@ -71,75 +74,20 @@ export default class Ignition {
                 this.errors.push({ error, hash, occurrences: 1 });
             }
 
-            this.updateIgnitionErrorSelector();
+            if (!this.selectorIframe) {
+                // if the selector hasn't been created yet, create it now
+                this.showErrorSelector();
+            }
 
+            this.updateSelectorErrorAmount();
+            this.updateDropdownHeight();
+
+            // pass the new errors to the dropdown component
+            (this.dropdownIframe!.contentWindow as any).bridge.updateErrors(this.errors);
+
+            // return false, so flare-client-js won't evaluate the error (this will be done when opening the error iframe)
             return false;
         };
-    }
-
-    private initializeVue() {
-        if (this.config.Vue) {
-            this.config.Vue.use(flareVue);
-        }
-    }
-
-    /* private showIgnitionErrorSelector() {
-        let selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
-
-        if (!selector) {
-            // TODO: create 2 iframes to house the selector and dropdown
-
-            const div = document.createElement('div');
-            div.innerHTML = ignitionErrorSelectorHTML;
-
-            document.body.appendChild(div);
-
-            selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
-
-            selector.addEventListener('change', e => this.handleSelectError(e));
-        }
-
-        selector.options[0].text = `Ignition found ${this.errors.length} error${
-            this.errors.length > 1 ? 's' : ''
-        } (click to show)`;
-
-        const index = this.errors.length - 1;
-
-        selector.options.add(
-            new Option(`Error ${index + 1}: ${this.errors[index].error.message}`, index.toString()),
-        );
-    } */
-
-    private updateIgnitionErrorSelector() {
-        let selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
-
-        if (!selector) {
-            // If the selector hasn't been created yet, create it now
-            this.showErrorSelector();
-
-            const div = document.createElement('div');
-            div.innerHTML = ignitionErrorSelectorHTML;
-
-            document.body.appendChild(div);
-
-            selector = document.getElementById('__ignition__selector') as HTMLSelectElement;
-
-            selector.addEventListener('change', e => this.handleSelectError(e));
-        }
-
-        this.updateSelectorErrorAmount();
-
-        /* (selectorIframe.contentWindow as any).bridge.notify(); */
-
-        selector.options[0].text = `Ignition found ${this.errors.length} error${
-            this.errors.length > 1 ? 's' : ''
-        } (click to show)`;
-
-        const index = this.errors.length - 1;
-
-        selector.options.add(
-            new Option(`Error ${index + 1}: ${this.errors[index].error.message}`, index.toString()),
-        );
     }
 
     private showErrorSelector() {
@@ -152,7 +100,7 @@ export default class Ignition {
         );
         dropdownIframe.setAttribute(
             'style',
-            'display: none; height: 50px; width: 300px; margin: 5px; border: none; position: fixed; bottom: 50px; right: 0; z-index: 100;',
+            'display: none; height: 50px; width: 300px; margin: 5px; border: none; position: fixed; bottom: 50px; right: 0; z-index: 100; overflow: scroll;',
         );
 
         document.body.appendChild(selectorIframe);
@@ -167,10 +115,18 @@ export default class Ignition {
         selectorDocument.body.style.margin = '0';
         dropdownDocument.body.style.margin = '0';
 
-        addScriptToIframe(dropdownIframe, dropdownIframeScript);
         addScriptToIframe(dropdownIframe, dropdownBridgeScript);
+        addScriptToIframe(dropdownIframe, dropdownIframeScript);
+
+        if (process.env.NODE_ENV === 'development') {
+            this.addDebugScriptToIframe(dropdownIframe);
+        }
 
         selectorDocument.body.addEventListener('click', this.toggleShowErrorDropdown);
+        (dropdownIframe!.contentWindow as any).bridge.addEventListener(
+            'error-clicked',
+            (error: Error) => this.handleSelectError(error),
+        );
 
         this.selectorIframe = selectorIframe;
         this.dropdownIframe = dropdownIframe;
@@ -193,6 +149,14 @@ export default class Ignition {
         }
     }
 
+    private updateDropdownHeight() {
+        if (!this.dropdownIframe) {
+            return;
+        }
+
+        this.dropdownIframe.style.height = Math.min(this.errors.length * 50, 250) + 'px';
+    }
+
     private toggleShowErrorDropdown() {
         if (!this.dropdownIframe) {
             return;
@@ -207,14 +171,7 @@ export default class Ignition {
         }
     }
 
-    private async handleSelectError(e: Event) {
-        // @ts-ignore
-        const { value } = e.target;
-
-        if (value === 'placeholder') {
-            return;
-        }
-
+    private async handleSelectError(error: Error) {
         this.showErrorIframe();
 
         if (!this.errorIframe) {
@@ -225,7 +182,7 @@ export default class Ignition {
         this.errorIframe.contentDocument!.body.innerHTML = '';
 
         // Generate a report for the error
-        const report = await this.flare.createReport(this.errors[value].error);
+        const report = await this.flare.createReport(error);
 
         if (!report) {
             return;
@@ -254,22 +211,20 @@ export default class Ignition {
 
         // Allow iframe console.log calls to reach the console when developing ignition-js
         if (process.env.NODE_ENV === 'development') {
-            addScriptToIframe(this.errorIframe, debugScript);
-
-            (this.errorIframe.contentWindow!.console as any).addEventListener(
-                'log',
-                (value: any) => {
-                    console.log.apply(null, value);
-                },
-            );
-
-            (this.errorIframe.contentWindow!.console as any).addEventListener(
-                'error',
-                (value: any) => {
-                    console.error.apply(null, value);
-                },
-            );
+            this.addDebugScriptToIframe(this.errorIframe);
         }
+    }
+
+    private addDebugScriptToIframe(iframe: HTMLIFrameElement) {
+        addScriptToIframe(iframe, debugScript);
+
+        (iframe.contentWindow!.console as any).addEventListener('log', (value: any) => {
+            console.log.apply(null, value);
+        });
+
+        (iframe.contentWindow!.console as any).addEventListener('error', (value: any) => {
+            console.error.apply(null, value);
+        });
     }
 
     private showErrorIframe() {
