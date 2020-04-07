@@ -124,7 +124,7 @@ export const debugScript = `
     }(document));
 `;
 
-export const selectorIframeScript = `
+export const dropdownBridgeScript = `
     var bridge = {
         __on: {},
         addEventListener: function(name, callback) {
@@ -138,8 +138,8 @@ export const selectorIframeScript = `
             }
             return this;
         },
-        clicked: function() {
-            this.dispatchEvent('clicked');
+        click: function() {
+            this.dispatchEvent('click');
         },
         notify: function() {
             var a = [];
@@ -150,5 +150,5 @@ export const selectorIframeScript = `
         }
     };
 
-    document.addEventListener('click', () => bridge.clicked());
+    document.addEventListener('click', () => bridge.click());
 `;

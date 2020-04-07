@@ -13,7 +13,7 @@ import {
     debugScript,
     selectorHTML,
     dropdownHTML,
-    selectorIframeScript,
+    dropdownBridgeScript,
 } from './htmlStrings';
 import { hydrateIgnitionLoader, addScriptToIframe } from './util';
 import FlareClient from '@flareapp/flare-client/src/FlareClient';
@@ -43,6 +43,8 @@ export default class Ignition {
     constructor({ config }: InitParams) {
         this.config = { ...this.config, ...config };
 
+        this.toggleShowErrorDropdown = this.toggleShowErrorDropdown.bind(this);
+
         this.initializeFlare();
         this.initializeVue();
     }
@@ -67,9 +69,9 @@ export default class Ignition {
             // no error with this hash exists yet, so we create a new one
             if (existingErrorIndex === -1) {
                 this.errors.push({ error, hash, occurrences: 1 });
-
-                this.updateIgnitionErrorSelector();
             }
+
+            this.updateIgnitionErrorSelector();
 
             return false;
         };
@@ -113,7 +115,7 @@ export default class Ignition {
 
         if (!selector) {
             // If the selector hasn't been created yet, create it now
-            this.showIgnitionErrorSelector();
+            this.showErrorSelector();
 
             const div = document.createElement('div');
             div.innerHTML = ignitionErrorSelectorHTML;
@@ -124,6 +126,10 @@ export default class Ignition {
 
             selector.addEventListener('change', e => this.handleSelectError(e));
         }
+
+        this.updateSelectorErrorAmount();
+
+        /* (selectorIframe.contentWindow as any).bridge.notify(); */
 
         selector.options[0].text = `Ignition found ${this.errors.length} error${
             this.errors.length > 1 ? 's' : ''
@@ -136,7 +142,7 @@ export default class Ignition {
         );
     }
 
-    private showIgnitionErrorSelector() {
+    private showErrorSelector() {
         const selectorIframe = document.createElement('iframe');
         const dropdownIframe = document.createElement('iframe');
 
@@ -146,29 +152,59 @@ export default class Ignition {
         );
         dropdownIframe.setAttribute(
             'style',
-            'height: 50px; width: 300px; margin: 5px; border: none; position: fixed; bottom: 50px; right: 0; z-index: 100;',
+            'display: none; height: 50px; width: 300px; margin: 5px; border: none; position: fixed; bottom: 50px; right: 0; z-index: 100;',
         );
 
         document.body.appendChild(selectorIframe);
         document.body.appendChild(dropdownIframe);
 
-        selectorIframe.contentDocument!.body.innerHTML = selectorHTML;
-        dropdownIframe.contentDocument!.body.innerHTML = dropdownHTML;
+        const selectorDocument = selectorIframe.contentDocument!;
+        const dropdownDocument = dropdownIframe.contentDocument!;
 
-        selectorIframe.contentDocument!.body.style.margin = '0';
-        dropdownIframe.contentDocument!.body.style.margin = '0';
+        selectorDocument.body.innerHTML = selectorHTML;
+        dropdownDocument.body.innerHTML = dropdownHTML;
 
-        addScriptToIframe(selectorIframe, selectorIframeScript);
+        selectorDocument.body.style.margin = '0';
+        dropdownDocument.body.style.margin = '0';
+
         addScriptToIframe(dropdownIframe, dropdownIframeScript);
+        addScriptToIframe(dropdownIframe, dropdownBridgeScript);
 
-        (selectorIframe.contentWindow as any).bridge.addEventListener('clicked', () => {
-            // TODO: show dropdown iframe & add an event listener on the document to close it when clicking outside of it?
-            console.log('clicked!');
-            (selectorIframe.contentWindow as any).bridge.notify();
-        });
+        selectorDocument.body.addEventListener('click', this.toggleShowErrorDropdown);
 
         this.selectorIframe = selectorIframe;
         this.dropdownIframe = dropdownIframe;
+    }
+
+    private updateSelectorErrorAmount() {
+        const errorAmount = this.errors.length;
+        const occurrenceAmount = this.errors.reduce((occurrenceAmount, error) => {
+            return occurrenceAmount + error.occurrences;
+        }, 0);
+
+        const node = this.selectorIframe?.contentDocument?.getElementById(
+            '__ignition__error-selector-text',
+        );
+
+        if (node) {
+            node.innerText = `ignition-js encountered ${errorAmount} unique error${
+                errorAmount > 1 ? 's' : ''
+            } (${occurrenceAmount} total occurrence${occurrenceAmount > 1 ? 's' : ''})`;
+        }
+    }
+
+    private toggleShowErrorDropdown() {
+        if (!this.dropdownIframe) {
+            return;
+        }
+
+        if (this.dropdownIframe.style.display === 'none') {
+            this.dropdownIframe.style.display = 'block';
+            document.addEventListener('click', this.toggleShowErrorDropdown);
+        } else {
+            this.dropdownIframe.style.display = 'none';
+            document.removeEventListener('click', this.toggleShowErrorDropdown);
+        }
     }
 
     private async handleSelectError(e: Event) {
