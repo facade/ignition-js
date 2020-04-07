@@ -142,11 +142,11 @@ export default class Ignition {
 
         selectorIframe.setAttribute(
             'style',
-            'height: 50px; width: 300px; border: none; position: absolute; bottom: 0; right: 0; z-index: 100;',
+            'height: 50px; width: 300px; margin: 5px; border: none; position: fixed; bottom: 0; right: 0; z-index: 100;',
         );
         dropdownIframe.setAttribute(
             'style',
-            'height: 50px; width: 300px; border: none; position: absolute; bottom: 50px; right: 0; z-index: 100;',
+            'height: 50px; width: 300px; margin: 5px; border: none; position: fixed; bottom: 50px; right: 0; z-index: 100;',
         );
 
         document.body.appendChild(selectorIframe);
@@ -155,12 +155,16 @@ export default class Ignition {
         selectorIframe.contentDocument!.body.innerHTML = selectorHTML;
         dropdownIframe.contentDocument!.body.innerHTML = dropdownHTML;
 
+        selectorIframe.contentDocument!.body.style.margin = '0';
+        dropdownIframe.contentDocument!.body.style.margin = '0';
+
         addScriptToIframe(selectorIframe, selectorIframeScript);
         addScriptToIframe(dropdownIframe, dropdownIframeScript);
 
-        (selectorIframe.contentWindow! as any).listener.addEventListener('clicked', () => {
+        (selectorIframe.contentWindow as any).bridge.addEventListener('clicked', () => {
             // TODO: show dropdown iframe & add an event listener on the document to close it when clicking outside of it?
             console.log('clicked!');
+            (selectorIframe.contentWindow as any).bridge.notify();
         });
 
         this.selectorIframe = selectorIframe;

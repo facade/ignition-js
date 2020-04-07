@@ -125,7 +125,7 @@ export const debugScript = `
 `;
 
 export const selectorIframeScript = `
-    var listener = {
+    var bridge = {
         __on: {},
         addEventListener: function(name, callback) {
             this.__on[name] = (this.__on[name] || []).concat(callback);
@@ -141,7 +141,7 @@ export const selectorIframeScript = `
         clicked: function() {
             this.dispatchEvent('clicked');
         },
-        incomingChange: function() {
+        notify: function() {
             var a = [];
             // For V8 optimization
             for (var i = 0, n = arguments.length; i < n; i++) {
@@ -150,5 +150,5 @@ export const selectorIframeScript = `
         }
     };
 
-    document.addEventListener('click', () => listener.clicked());
+    document.addEventListener('click', () => bridge.clicked());
 `;
