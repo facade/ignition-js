@@ -1,13 +1,13 @@
 <template>
-    <ul style="margin: 0;">
-        <div
+    <ul style="margin: 0; list-style-type: none; padding: 0;">
+        <li
             v-for="error in errors"
             :key="error.hash"
-            style="height: 50px;"
+            style="height: 50px; cursor: pointer;"
             @click="handleSelectError(error)"
         >
             {{ error.error.message }} ({{ error.occurrences }} occurrences)
-        </div>
+        </li>
     </ul>
 </template>
 

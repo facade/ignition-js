@@ -18,18 +18,56 @@
 8 error npm WARN npm can't make any promises that npm will work with this version.
 8 error npm WARN npm Supported releases of Node.js are the latest release of 6, 8, 9, 10, 11.
 8 error npm WARN npm You can find the latest version at https://nodejs.org/
+8 error npm WARN npm npm does not support Node.js v13.5.0
+8 error npm WARN npm You should probably upgrade to a newer version of node as we
+8 error npm WARN npm can't make any promises that npm will work with this version.
+8 error npm WARN npm Supported releases of Node.js are the latest release of 6, 8, 9, 10, 11.
+8 error npm WARN npm You can find the latest version at https://nodejs.org/
 8 error
 8 error webpack is watching the files…
 8 error
-8 error [BABEL] Note: The code generator has deoptimised the styling of /Users/adriaanmarain/projects/ignition-ui/compiled/ignition.js as it exceeds the max of 500KB.
-8 error [BABEL] Note: The code generator has deoptimised the styling of /Users/adriaanmarain/projects/ignition-ui/compiled/ignition.js as it exceeds the max of 500KB.
 8 error
 8 error
-8 error > @facadecompany/ignition-js@0.0.1 watch /Users/adriaanmarain/projects/ignition-js/packages/ignition-js
-8 error > webpack --mode development --watch
+8 error > @facadecompany/ignition-dropdown@0.1.0 watch /Users/adriaanmarain/projects/ignition-js/packages/ignition-dropdown
+8 error > npm run build-dev -- --watch
 8 error
-8 error    53 modules
-8 error    53 modules
+8 error
+8 error > @facadecompany/ignition-dropdown@0.1.0 build-dev /Users/adriaanmarain/projects/ignition-js/packages/ignition-dropdown
+8 error > NODE_ENV=development webpack --mode=development "--watch"
+8 error
+8 error Hash: [1ma2541d9ac7fe4cbec7b3[39m[22m
+8 error Version: webpack [1m4.42.1[39m[22m
+8 error Time: [1m795[39m[22mms
+8 error Built at: 04/08/2020 [1m9:16:46 AM[39m[22m
+8 error       [1mAsset[39m[22m     [1mSize[39m[22m    [1mChunks[39m[22m  [1m[39m[22m           [1m[39m[22m[1mChunk Names[39m[22m
+8 error [1m[32mdropdown.js[39m[22m  261 KiB  [1mdropdown[39m[22m  [1m[32m[emitted][39m[22m  dropdown
+8 error [1m[32mselector.js[39m[22m  260 KiB  [1mselector[39m[22m  [1m[32m[emitted][39m[22m  selector
+8 error Entrypoint [1mdropdown[39m[22m = [1m[32mdropdown.js[39m[22m
+8 error Entrypoint [1mselector[39m[22m = [1m[32mselector.js[39m[22m
+8 error [./node_modules/webpack/buildin/global.js] [1m(webpack)/buildin/global.js[39m[22m 472 bytes {[1m[33mdropdown[39m[22m} {[1m[33mselector[39m[22m}[1m[32m [built][39m[22m
+8 error [[1m./src/dropdown.js[39m[22m] 146 bytes {[1m[33mdropdown[39m[22m}[1m[32m [built][39m[22m
+8 error [[1m./src/selector.js[39m[22m] 146 bytes {[1m[33mselector[39m[22m}[1m[32m [built][39m[22m
+8 error     + 15 hidden modules
+8 error Hash: [1md5d0dfb8b801a468f717[39m[22m
+8 error Version: webpack [1m4.42.1[39m[22m
+8 error Time: [1m45[39m[22mms
+8 error Built at: 04/08/2020 [1m9:17:07 AM[39m[22m
+8 error       [1mAsset[39m[22m     [1mSize[39m[22m    [1mChunks[39m[22m  [1m[39m[22m           [1m[39m[22m[1mChunk Names[39m[22m
+8 error [1m[32mdropdown.js[39m[22m  261 KiB  [1mdropdown[39m[22m  [1m[32m[emitted][39m[22m  dropdown
+8 error  + 1 hidden asset
+8 error Entrypoint [1mdropdown[39m[22m = [1m[32mdropdown.js[39m[22m
+8 error Entrypoint [1mselector[39m[22m = [1m[32mselector.js[39m[22m
+8 error    18 modules
+8 error Hash: [1m8e0aa804b0b6d4f7a97d[39m[22m
+8 error Version: webpack [1m4.42.1[39m[22m
+8 error Time: [1m28[39m[22mms
+8 error Built at: 04/08/2020 [1m9:18:01 AM[39m[22m
+8 error       [1mAsset[39m[22m     [1mSize[39m[22m    [1mChunks[39m[22m  [1m[39m[22m           [1m[39m[22m[1mChunk Names[39m[22m
+8 error [1m[32mdropdown.js[39m[22m  261 KiB  [1mdropdown[39m[22m  [1m[32m[emitted][39m[22m  dropdown
+8 error  + 1 hidden asset
+8 error Entrypoint [1mdropdown[39m[22m = [1m[32mdropdown.js[39m[22m
+8 error Entrypoint [1mselector[39m[22m = [1m[32mselector.js[39m[22m
+8 error    18 modules
 8 error
 8 error     at makeError (/Users/adriaanmarain/projects/ignition-js/node_modules/execa/index.js:174:9)
 8 error     at /Users/adriaanmarain/projects/ignition-js/node_modules/execa/index.js:278:16

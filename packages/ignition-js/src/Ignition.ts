@@ -172,6 +172,7 @@ export default class Ignition {
     }
 
     private async handleSelectError(error: Error) {
+        this.toggleShowErrorDropdown();
         this.showErrorIframe();
 
         if (!this.errorIframe) {
