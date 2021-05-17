@@ -1,3 +1,5 @@
+**THIS PACKAGE HAS BEEN ABANDONED**
+
 # ignition-js
 
 A beautiful error page for inspecting your JavaScript errors more closely
